@@ -303,13 +303,6 @@ public class WorkbenchEditor extends AbstractContainer {
                         title = p7.getSecondValue();
                     }
 
-                    // for input, output slots and menu
-                    int progress_bar_slot = 22;
-                    Pair<Boolean, Integer> p9 = ItemUtil.isInteger(menu, matrix, "a");
-                    if (p9.getFirstValue()) {
-                        progress_bar_slot = p9.getSecondValue();
-                    }
-
                     int[] input = new int[0];
                     int[] output = new int[0];
                     Location flowContainer = b.getRelative(BlockFace.DOWN).getLocation();
@@ -359,7 +352,7 @@ public class WorkbenchEditor extends AbstractContainer {
                             return false;
                         }
 
-                        YamlWriter menuWriter = mc.getAsYamlWriter(menuBlockMenu, input, output, id, title, progress_bar_slot);
+                        YamlWriter menuWriter = mc.getAsYamlWriter(menuBlockMenu, input, output, id, title, -1);
                         ClipboardUtil.send(p, "菜单编辑器: ", menuWriter.toString());
                         p.sendMessage(ChatColor.YELLOW + "==============================");
                     }
