@@ -53,7 +53,7 @@ public class PersistentLinkedMachineRecipeType implements PersistentDataType<Per
         ItemStack[] inputArray = new ItemStack[inputs.size() * 2];
         int index = 0;
         for (Map.Entry<Integer, ItemStack> entry : inputs.entrySet()) {
-            inputArray[index] = new ItemStack(Material.BARRIER, entry.getKey()); // first item is used to store the linked slot
+            inputArray[index] = new ItemStack(Material.BARRIER, entry.getKey() + 1); // first item is used to store the linked slot, + 1 for preventing 0 amount
             inputArray[index + 1] = entry.getValue(); // second item is the actual item
             index += 2;
         }
@@ -64,7 +64,7 @@ public class PersistentLinkedMachineRecipeType implements PersistentDataType<Per
         ItemStack[] outputArray = new ItemStack[outputs.size() * 2];
         index = 0;
         for (Map.Entry<Integer, ItemStack> entry : outputs.entrySet()) {
-            outputArray[index] = new ItemStack(Material.BARRIER, entry.getKey());
+            outputArray[index] = new ItemStack(Material.BARRIER, entry.getKey() + 1);
             outputArray[index + 1] = entry.getValue();
             index += 2;
         }
@@ -94,12 +94,12 @@ public class PersistentLinkedMachineRecipeType implements PersistentDataType<Per
 
         Map<Integer, ItemStack> inputs = new HashMap<>();
         for (int i = 0; i < inputArray.length; i += 2) {
-            inputs.put(inputArray[i].getAmount(), inputArray[i + 1]);
+            inputs.put(inputArray[i].getAmount() - 1, inputArray[i + 1]); // -1 for removing the prevention of 0 amount
         }
 
         Map<Integer, ItemStack> outputs = new HashMap<>();
         for (int i = 0; i < outputArray.length; i += 2) {
-            outputs.put(outputArray[i].getAmount(), outputArray[i + 1]);
+            outputs.put(outputArray[i].getAmount() - 1, outputArray[i + 1]);
         }
 
         return new LinkedMachineRecipe(name, chooseOne, forDisplay, hide, processingTime, inputs, outputs, freeOutputArray);
