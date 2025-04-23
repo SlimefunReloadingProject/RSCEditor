@@ -13,7 +13,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public abstract class AbstractTool extends SlimefunItem {
+public abstract class AbstractTool extends RSCEItem {
     public AbstractTool(@NotNull SlimefunItemStack item) {
         super(RSCEItemGroups.TOOL_GROUP, item, RecipeType.NULL, new ItemStack[]{null, null, null, null, null, null, null, null, null});
     }

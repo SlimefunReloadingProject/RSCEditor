@@ -26,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 @SuppressWarnings("deprecation")
-public abstract class AbstractContainer extends AContainer {
+public abstract class AbstractContainer extends RSCEAContainer {
     public AbstractContainer(@NotNull SlimefunItemStack item) {
         super(RSCEItemGroups.MACHINE_GROUP, item, RecipeType.NULL, new ItemStack[]{null, null, null, null, null, null, null, null, null});
         setCapacity(1);

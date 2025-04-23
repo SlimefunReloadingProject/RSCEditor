@@ -5,6 +5,7 @@ import com.balugaq.rsceditor.core.command.RSCECommands;
 import com.balugaq.rsceditor.core.listeners.ItemEditListener;
 import com.balugaq.rsceditor.core.managers.ConfigManager;
 import com.balugaq.rsceditor.implementation.groups.GroupSetup;
+import com.balugaq.rsceditor.implementation.items.AuthorSetup;
 import com.balugaq.rsceditor.implementation.items.BiomeItems;
 import com.balugaq.rsceditor.implementation.items.ItemGroupItems;
 import com.balugaq.rsceditor.implementation.items.MachineSetup;
@@ -47,6 +48,7 @@ public class RSCEditor extends JavaPlugin implements SlimefunAddon {
 
         GroupSetup.register();
 
+        AuthorSetup.register();
         TypeItems.register();
         MachineSetup.register();
         RecipeTypeItems.register();
