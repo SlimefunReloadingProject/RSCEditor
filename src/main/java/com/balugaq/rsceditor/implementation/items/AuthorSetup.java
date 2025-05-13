@@ -18,7 +18,7 @@ public class AuthorSetup {
                                 Material.PAPER,
                                 "&b版本信息",
                                 "&b作者: balugaq",
-                                "&b版本: 44"
+                                "&b版本: 45"
                         )
                 )
         );

@@ -20,10 +20,13 @@ import com.balugaq.rsceditor.implementation.items.machines.SolarGeneratorEditor;
 import com.balugaq.rsceditor.implementation.items.machines.TemplateRecipeMachineEditor;
 import com.balugaq.rsceditor.implementation.items.machines.WorkbenchEditor;
 import com.balugaq.rsceditor.implementation.items.machines.builder.LinkedMachineRecipeBuilder;
+import com.balugaq.rsceditor.implementation.items.machines.builder.LinkedMachineRecipesBuilder;
 import com.balugaq.rsceditor.implementation.items.machines.builder.MachineRecipeBuilder;
-import com.balugaq.rsceditor.implementation.items.machines.builder.MultiBlockRecipeBuilder;
+import com.balugaq.rsceditor.implementation.items.machines.builder.MachineRecipesBuilder;
+import com.balugaq.rsceditor.implementation.items.machines.builder.MultiBlockRecipesBuilder;
 import com.balugaq.rsceditor.implementation.items.machines.builder.RegisterBuilder;
 import com.balugaq.rsceditor.implementation.items.machines.builder.TemplateMachineRecipeBuilder;
+import com.balugaq.rsceditor.implementation.items.machines.builder.TemplateMachineRecipesBuilder;
 import com.balugaq.rsceditor.implementation.items.machines.container.ArmorPieceContainer;
 import com.balugaq.rsceditor.implementation.items.machines.container.CustomRainbowContainer;
 import com.balugaq.rsceditor.implementation.items.machines.container.EmptyContainer1x9;
@@ -211,7 +214,7 @@ public class MachineSetup {
         );
         SlimefunItemUtil.registerItem(registerBuilder);
 
-        MultiBlockRecipeBuilder multiBlockRecipeBuilder = new MultiBlockRecipeBuilder(
+        MultiBlockRecipesBuilder multiBlockRecipesBuilder = new MultiBlockRecipesBuilder(
                 new SlimefunItemStack(
                         "RSC_EDITOR_MULTI_BLOCK_RECIPE_BUILDER",
                         new CustomItemStack(
@@ -220,7 +223,40 @@ public class MachineSetup {
                         )
                 )
         );
-        SlimefunItemUtil.registerItem(multiBlockRecipeBuilder);
+        SlimefunItemUtil.registerItem(multiBlockRecipesBuilder);
+
+        MachineRecipesBuilder machineRecipesBuilder = new MachineRecipesBuilder(
+                new SlimefunItemStack(
+                        "RSC_EDITOR_MACHINE_RECIPES_BUILDER",
+                        new CustomItemStack(
+                                Material.BROWN_MUSHROOM_BLOCK,
+                                "&b机器配方组合器"
+                        )
+                )
+        );
+        SlimefunItemUtil.registerItem(machineRecipesBuilder);
+
+        TemplateMachineRecipesBuilder templateMachineRecipesBuilder = new TemplateMachineRecipesBuilder(
+                new SlimefunItemStack(
+                        "RSC_EDITOR_TEMPLATE_MACHINE_RECIPES_BUILDER",
+                        new CustomItemStack(
+                                Material.RED_MUSHROOM_BLOCK,
+                                "&b模板配方机器配方组合器"
+                        )
+                )
+        );
+        SlimefunItemUtil.registerItem(templateMachineRecipesBuilder);
+
+        LinkedMachineRecipesBuilder linkedMachineRecipesBuilder = new LinkedMachineRecipesBuilder(
+                new SlimefunItemStack(
+                        "RSC_EDITOR_LINKED_MACHINE_RECIPES_BUILDER",
+                        new CustomItemStack(
+                                Material.MUSHROOM_STEM,
+                                "&b强配方机器配方组合器"
+                        )
+                )
+        );
+        SlimefunItemUtil.registerItem(linkedMachineRecipesBuilder);
 
         // editors
         ItemGroupEditor itemGroupEditor = new ItemGroupEditor(

@@ -2,7 +2,6 @@ package com.balugaq.rsceditor.implementation.items.machines.container;
 
 import com.balugaq.rsceditor.api.base.AbstractContainer;
 import com.balugaq.rsceditor.api.objects.MenuMatrix;
-import com.balugaq.rsceditor.utils.Debug;
 import com.balugaq.rsceditor.utils.YamlWriter;
 import io.github.thebusybiscuit.slimefun4.api.items.SlimefunItemStack;
 import io.github.thebusybiscuit.slimefun4.utils.SlimefunUtils;
@@ -16,7 +15,6 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -85,9 +83,6 @@ public class MenuContainer extends AbstractContainer {
         for (int i : output_slots) {
             output_slot_list.add(i);
         }
-
-        Debug.log("input_slots: " + Arrays.toString(input_slots));
-        Debug.log("output_slots: " + Arrays.toString(output_slots));
 
         writer.setRoot(id);
         writer.set("title", title);

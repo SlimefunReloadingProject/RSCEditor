@@ -10,7 +10,19 @@ public class Debug {
         }
     }
 
+    public static void log(String... message) {
+        for (String msg : message) {
+            log(msg);
+        }
+    }
+
     public static void log(Object object) {
         log(object == null ? "null" : object.toString());
+    }
+
+    public static void log(Object... objects) {
+        for (Object object : objects) {
+            log(object);
+        }
     }
 }

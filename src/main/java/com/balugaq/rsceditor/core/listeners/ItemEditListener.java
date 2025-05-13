@@ -1,6 +1,5 @@
 package com.balugaq.rsceditor.core.listeners;
 
-import com.balugaq.rsceditor.utils.Debug;
 import io.github.thebusybiscuit.slimefun4.core.attributes.MachineTier;
 import io.github.thebusybiscuit.slimefun4.core.attributes.MachineType;
 import io.github.thebusybiscuit.slimefun4.core.attributes.Radioactivity;
@@ -208,7 +207,6 @@ public class ItemEditListener implements Listener {
 
     @EventHandler(priority = EventPriority.LOW)
     public void onEditing(PlayerChatEvent event) {
-        Debug.log("editing");
         String message = event.getMessage();
         Player player = event.getPlayer();
         if (!player.isOp()) {
@@ -236,6 +234,8 @@ public class ItemEditListener implements Listener {
             player.sendMessage(compile("&btt [hashcode|base64|url|material] - Set the current item's type to the specified type. Allows head textures."));
             player.sendMessage(compile("&b%q[content] - Input content and avoid conflicts with commands."));
             player.sendMessage(compile("&bamt [int] - Set the amount of the current item to the specified value."));
+            player.sendMessage(compile("&bcmd [int] - Set the Custom Model Data of the current item"));
+            player.sendMessage(compile("&bglow - Glow the item"));
             player.sendMessage(compile("&2==========Placeholders=========="));
             player.sendMessage(compile("&b%ctu = LoreBuilder.CROUCH_TO_USE"));
             player.sendMessage(compile("&b%hsr = LoreBuilder.HAZMAT_SUIT_REQUIRED"));
@@ -274,7 +274,6 @@ public class ItemEditListener implements Listener {
 
     @EventHandler
     public void onSelecting(PlayerChatEvent event) {
-        Debug.log("selecting");
         String message = event.getMessage();
         Player player = event.getPlayer();
         if (!player.isOp()) {
@@ -282,7 +281,6 @@ public class ItemEditListener implements Listener {
         }
         if (editingPlayers.contains(player)) {
             if ("done".equals(message)) {
-                Debug.log("trigger done editing");
                 doneEditing(player);
                 event.setCancelled(true);
                 return;
@@ -295,27 +293,23 @@ public class ItemEditListener implements Listener {
             }
             // commands
             if ("dd".equals(message)) {
-                Debug.log("trigger delete line");
                 removeLine(player, getSelectingLine(player));
                 clearScreen(player);
                 sendLore(player, itemStack.getItemMeta().getLore(), getSelectingLine(player));
                 event.setCancelled(true);
             } else if (message.startsWith("aa ")) {
-                Debug.log("trigger add line");
                 String value = message.substring(3);
                 addLine(player, getSelectingLine(player), "&f" + value);
                 clearScreen(player);
                 sendLore(player, itemStack.getItemMeta().getLore(), getSelectingLine(player));
                 event.setCancelled(true);
             } else if (message.startsWith("ii ")) {
-                Debug.log("trigger insert line");
                 String value = message.substring(3);
                 insertLine(player, getSelectingLine(player), "&f" + value);
                 clearScreen(player);
                 sendLore(player, itemStack.getItemMeta().getLore(), getSelectingLine(player));
                 event.setCancelled(true);
             } else if (message.startsWith("mm ")) {
-                Debug.log("trigger modify line");
                 String value = message.substring(3);
                 modifyLine(player, getSelectingLine(player), "&f" + value);
                 clearScreen(player);
@@ -441,7 +435,29 @@ public class ItemEditListener implements Listener {
                     }
                 }
                 event.setCancelled(true);
+            } else if (message.startsWith("cmd ")) {
+                String value = message.substring(4);
+                Integer cmd;
+                try {
+                    cmd = Integer.parseInt(value);
+                } catch (NumberFormatException e) {
+                    cmd = null;
+                }
+
+                var meta = itemStack.getItemMeta();
+                meta.setCustomModelData(cmd);
+                itemStack.setItemMeta(meta);
+                player.updateInventory();
+                event.setCancelled(true);
+            } else if ("glow".equals(message)) {
+                var meta = itemStack.getItemMeta();
+                meta.addEnchant(Enchantment.LUCK, 1, true);
+                meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+                itemStack.setItemMeta(meta);
+                player.updateInventory();
+                event.setCancelled(true);
             }
+
             // intentionally
             else if ("rhelp".equals(message)) {
             } else if ("l".equals(message)) {
@@ -517,7 +533,6 @@ public class ItemEditListener implements Listener {
     }
 
     public void modifyLine(Player player, int line, String value) {
-        Debug.log("modify line " + line + ": " + value);
         ItemStack itemStack = player.getInventory().getItemInMainHand();
         List<String> lore = Objects.requireNonNullElse(itemStack.getItemMeta().getLore(), new ArrayList<>());
         if (line >= 0 && line < lore.size()) {
@@ -531,7 +546,6 @@ public class ItemEditListener implements Listener {
     }
 
     public void addLine(Player player, int line, String value) {
-        Debug.log("add line: " + value);
         ItemStack itemStack = player.getInventory().getItemInMainHand();
         List<String> lore = Objects.requireNonNullElse(itemStack.getItemMeta().getLore(), new ArrayList<>());
         if (line >= 0 && line < lore.size()) {
@@ -547,7 +561,6 @@ public class ItemEditListener implements Listener {
     }
 
     public void insertLine(Player player, int line, String value) {
-        Debug.log("insert line " + line + ": " + value);
         ItemStack itemStack = player.getInventory().getItemInMainHand();
         List<String> lore = Objects.requireNonNullElse(itemStack.getItemMeta().getLore(), new ArrayList<>());
         if (line >= 0 && line < lore.size()) {
@@ -562,7 +575,6 @@ public class ItemEditListener implements Listener {
 
     @EventHandler
     public void onLineSelect(PlayerItemHeldEvent event) {
-        Debug.log("line select");
         Player player = event.getPlayer();
         if (editingPlayers.contains(player)) {
             ItemStack itemStack = player.getInventory().getItem(event.getPreviousSlot());
@@ -573,18 +585,13 @@ public class ItemEditListener implements Listener {
             List<String> lore = Objects.requireNonNullElse(itemStack.getItemMeta().getLore(), new ArrayList<>());
             int newSlot = event.getNewSlot();
             int previousSlot = event.getPreviousSlot();
-            Debug.log("new slot: " + newSlot + ", previous slot: " + previousSlot);
             if (newSlot >= 5 && previousSlot == 0) { // scroll left
-                Debug.log("scroll left type 1");
                 setSelectingLine(player, getSelectingLine(player) - 1, lore.size());
             } else if (newSlot < 5 && previousSlot == 8) { // scroll right
-                Debug.log("scroll right type 2");
                 setSelectingLine(player, getSelectingLine(player) + 1, lore.size());
             } else if (newSlot > previousSlot) { // scroll right
-                Debug.log("scroll right type 3");
                 setSelectingLine(player, getSelectingLine(player) + 1, lore.size());
             } else if (newSlot < previousSlot) { // scroll left
-                Debug.log("scroll left type 4");
                 setSelectingLine(player, getSelectingLine(player) - 1, lore.size());
             }
             if (itemStack != null && itemStack.getType() != Material.AIR) {
@@ -596,7 +603,6 @@ public class ItemEditListener implements Listener {
     }
 
     public void removeLine(Player player, int line) {
-        Debug.log("remove line " + line);
         ItemStack itemStack = player.getInventory().getItemInMainHand();
         List<String> lore = Objects.requireNonNullElse(itemStack.getItemMeta().getLore(), new ArrayList<>());
         if (line >= 0 && line < lore.size()) {
@@ -634,7 +640,6 @@ public class ItemEditListener implements Listener {
     }
 
     public void sendLore(Player player, List<String> lore, int selectingLine) {
-        Debug.log("send lore");
         List<String> showLines = new ArrayList<>();
         List<String> lines;
         if (lore == null) {
@@ -660,14 +665,12 @@ public class ItemEditListener implements Listener {
     }
 
     public void doneEditing(Player player) {
-        Debug.log("done editing");
         editingPlayers.remove(player);
         selectingLines.remove(player);
     }
 
     @EventHandler
     public void onQuit(PlayerQuitEvent event) {
-        Debug.log("quit");
         Player player = event.getPlayer();
         doneEditing(player);
     }
