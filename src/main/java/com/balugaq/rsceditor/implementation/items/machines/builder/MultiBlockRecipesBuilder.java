@@ -57,14 +57,84 @@ public class MultiBlockRecipesBuilder extends AbstractContainer {
                     YamlWriter writer = new YamlWriter();
                     writer.setRoot("recipes");
 
-                    var recipes = ItemUtil.isMachineRecipes(menu, matrix, "I");
-                    if (recipes.getFirstValue()) {
-                        for (var recipe : recipes.getSecondValue()) {
+                    var recipes2 = ItemUtil.isMachineRecipes(menu, matrix, "I");
+                    if (recipes2.getFirstValue()) {
+                        for (var recipe : recipes2.getSecondValue()) {
                             writer.set("", recipe);
                         }
                     } else {
-                        p.sendMessage("§c你还没有放置物品");
-                        return false;
+                        Pair<Boolean, List<ItemStack>> itemStacks = ItemUtil.isItems(menu, matrix, "I");
+                        if (itemStacks.getFirstValue()) {
+                            List<ItemStack> itemStackList = itemStacks.getSecondValue();
+                            for (ItemStack itemStack : itemStackList) {
+                                SlimefunItem slimefunItem = SlimefunItem.getByItem(itemStack);
+                                if (slimefunItem == null) {
+                                    // 非 Slimefun 物品，尝试获取 Minecraft 配方
+                                    Recipe[] recipes = Slimefun.getMinecraftRecipeService().getRecipesFor(itemStack);
+                                    if (recipes != null && recipes.length > 0) {
+                                        Recipe availableRecipe = recipes[0];
+                                        if (availableRecipe instanceof ShapedRecipe sr) {
+                                            String[] shape = sr.getShape();
+                                            Map<Character, RecipeChoice> choiceMap = sr.getChoiceMap();
+                                            List<ItemStack> recipe = new ArrayList<>();
+                                            for (String row : shape) {
+                                                for (char c : row.toCharArray()) {
+                                                    RecipeChoice choice = choiceMap.get(c);
+                                                    if (choice == null) {
+                                                        recipe.add(null);
+                                                    } else {
+                                                        recipe.add(choice.getItemStack());
+                                                    }
+                                                }
+                                            }
+
+                                            for (int m = 0; m < recipe.size(); m++) {
+                                                ItemStack item = recipe.get(m);
+                                                if (item != null && item.getType() != Material.AIR) {
+                                                    writer.set(item.getType().name().toLowerCase() + ".input." + m, item.clone(), false);
+                                                }
+                                            }
+                                            continue;
+                                        } else if (availableRecipe instanceof ShapelessRecipe sr) {
+                                            List<RecipeChoice> choiceList = sr.getChoiceList();
+                                            for (int m = 0; m < choiceList.size(); m++) {
+                                                RecipeChoice choice = choiceList.get(m);
+                                                if (choice == null) {
+                                                    continue;
+                                                }
+                                                ItemStack item = choice.getItemStack();
+                                                if (item != null && item.getType() != Material.AIR) {
+                                                    writer.set(item.getType().name().toLowerCase() + ".input." + m, item.clone(), false);
+                                                }
+                                            }
+                                        }
+                                    }
+                                    continue;
+                                }
+
+                                // Slimefun 物品
+
+                                String id = slimefunItem.getId();
+                                ItemStack item = slimefunItem.getRecipeOutput();
+                                ItemStack[] recipe = slimefunItem.getRecipe();
+                                if (recipe == null) {
+                                    continue;
+                                }
+
+                                for (int k = 0; k < recipe.length; k++) {
+                                    ItemStack input = recipe[k];
+                                    if (input == null || input.getType() == Material.AIR) {
+                                        continue;
+                                    }
+                                    writer.set(id.toLowerCase() + ".input." + (k + 1), input.clone(), false);
+                                }
+
+                                writer.set(id.toLowerCase() + ".output", item.clone(), false);
+                            }
+                        } else {
+                            p.sendMessage("§c你还没有放置物品");
+                            return false;
+                        }
                     }
 
                     ClipboardUtil.send(p, writer.toString());
